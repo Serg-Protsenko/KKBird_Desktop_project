@@ -14,27 +14,29 @@ import os
 bird_detect_counter = 0
 detect_count = 0
 path_to_sounds = r'birds_sounds'
+proto_txt_Path = os.path.join(os.getcwd(), "MobileNetSSD_deploy.prototxt.txt")
+model_Path = os.path.join(os.getcwd(), "MobileNetSSD_deploy.caffemodel")
 
 
 # Random play sound from one of bird of prey
 def play_random_sound():
     while True:
-        print('Thread is running')  # for testing
+        # print('Thread is running')  # for testing
         global detect_count
-        print(f'Detect counter is {detect_count}')
+        # print(f'Detect counter is {detect_count}')
         if detect_count >= 1:
             detect_count = 0
-            print('Sleeping 3 sec...', end='\n\n')  # for testing
+            # print('Sleeping 3 sec...', end='\n\n')  # for testing
             time.sleep(3)
             if detect_count > 1:
                 random_sound_select = random.choice(os.listdir(path_to_sounds))
                 path_random_sound = os.path.join(path_to_sounds, random_sound_select)
                 playsound(path_random_sound, block=False)
-                print('Random sound: ', random_sound_select)  # for testing
+                # print('Random sound: ', random_sound_select)  # for testing
                 global bird_detect_counter
                 bird_detect_counter += 1
-                print('Sleeping 10 sec...', end='\n\n')  # for testing
-                time.sleep(15)  # wait 10 second when a bird go away
+                # print('Sleeping 10 sec...', end='\n\n')  # for testing
+                time.sleep(10)  # wait 10 second when a bird go away
                 # global detect_count
                 detect_count = 0
             # else:
@@ -73,17 +75,17 @@ def normal_button(button):
 def available_cams():
     cams = []
     for i in range(10):
-        cap = cv2.VideoCapture(i)
-        if cap.isOpened():
+        cam = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        if cam.isOpened():
             cams.append(i)
     return cams
 
 
 # A function that handles events when you choose webcam in list of webcams (Combobox)
 def chose_list(event):
-    choose_camera = int(list_cams.get())
+    choose_cam = int(list_cams.get())
     global cap
-    cap = cv2.VideoCapture(choose_camera, cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(choose_cam, cv2.CAP_DSHOW)
 
 
 # Create list of available USB cams
@@ -170,7 +172,7 @@ IGNORE = ["background", "aeroplane", "bicycle", "boat", "bottle", "bus", "car", 
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 # load our serialized model from disk
-net = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt.txt', 'MobileNetSSD_deploy.caffemodel')
+net = cv2.dnn.readNetFromCaffe(proto_txt_Path, model_Path)  # "MobileNetSSD_deploy.prototxt.txt", "MobileNetSSD_deploy.caffemodel"
 
 
 root = Tk()
@@ -195,6 +197,11 @@ video_label = Label(video_frame, image=main_image)  # , text="Press Start Video"
 video_label.pack(fill=BOTH, expand=True)
 
 # Create button block
+
+# ttk_style = ttk.Style()
+# ttk_style.theme_use('clam')
+# ttk_style.configure()
+
 # Create button frame
 buttons_frame = Frame(root, height=40, background='#474e68')
 buttons_frame.pack(fill=X, side=BOTTOM)
