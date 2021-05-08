@@ -128,7 +128,7 @@ def process_frame(img):
 
         # filter out weak detections by ensuring the `confidence` is
         # greater than the minimum confidence
-        if confidence > 0.2:
+        if confidence > 0.5:  # Increased confidence from 0.2 to 0.5 (20% to 50%) in order to reduce false detection
             # extract the index of the class label from the
             # `detections`, then compute the (x, y)-coordinates of
             # the bounding box for the object
