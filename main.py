@@ -210,6 +210,7 @@ buttons_frame.pack(fill=X, side=BOTTOM)
 list_cams_label = Label(buttons_frame, text='Choose webcam:')
 list_cams_label.grid(column=0, row=0, padx=5)
 list_cams = ttk.Combobox(buttons_frame, values=valid_cams, width=11)
+list_cams['state'] = 'readonly'  # Fix bug -> It is possible to enter characters in the dropdown field
 list_cams.current(0)
 list_cams.bind("<<ComboboxSelected>>", chose_list)
 list_cams.grid(column=1, row=0, padx=5)
@@ -245,7 +246,7 @@ choose_camera = int(list_cams.get())
 try:
     global cap
     cap = cv2.VideoCapture(choose_camera, cv2.CAP_DSHOW)
-except:
+except Exception:
     messagebox.showerror('Error', 'USB camera access error!')
 
 
