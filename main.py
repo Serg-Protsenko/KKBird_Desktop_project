@@ -235,7 +235,7 @@ detect_label.grid(column=4, row=0, padx=20)
 
 def detector(detect):
     global bird_detect_counter
-    var.set(f'Detect counter: {bird_detect_counter}')  # Renamed from "Bird detection:" to "Detect counter:"
+    var.set(f'Detect counter: {bird_detect_counter}')  # Renamed Label from "Bird detection:" to "Detect counter:"
     # return detect
 
 
