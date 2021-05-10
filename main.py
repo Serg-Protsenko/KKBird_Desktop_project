@@ -1,15 +1,34 @@
-import threading
-from tkinter import *
-from tkinter import ttk
-import settings
-import cv2
-from PIL import Image, ImageTk
-import numpy as np
-from tkinter import messagebox
-from playsound import playsound
-import time
-import random
 import os
+import random
+import threading
+import time
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+
+import cv2
+import numpy as np
+from PIL import Image, ImageTk
+from playsound import playsound
+
+import settings
+import platform
+import ctypes
+import logging
+from tkinter import filedialog as fd
+
+logging.basicConfig(   # config INFO level for add DATA to log file
+    level=logging.INFO,
+    filename='logfile.log',
+    filemode='a',
+    format='%(asctime)s - %(message)s',
+    datefmt='%d-%b-%y %H:%M:%S'
+)
+
+SYSTEM = platform.system().lower()  # only for Windows keeps system awake
+if SYSTEM == "windows":
+    ctypes.windll.kernel32.SetThreadExecutionState(0x80000002)
+    # print("Always On")  # for testing
 
 bird_detect_counter = 0
 detect_count = 0
@@ -23,7 +42,7 @@ def play_random_sound():
     while True:
         # print('Thread is running')  # for testing
         global detect_count
-        # print(f'Detect counter is {detect_count}')
+        # print(f'Detect counter is {detect_count}')  # for testing
         if detect_count >= 1:
             detect_count = 0
             # print('Sleeping 3 sec...', end='\n\n')  # for testing
@@ -35,13 +54,10 @@ def play_random_sound():
                 # print('Random sound: ', random_sound_select)  # for testing
                 global bird_detect_counter
                 bird_detect_counter += 1
+                logging.info(f'Detect counter: {bird_detect_counter}')  # Add info about detection to log file
                 # print('Sleeping 10 sec...', end='\n\n')  # for testing
                 time.sleep(10)  # wait 10 second when a bird go away
-                # global detect_count
                 detect_count = 0
-            # else:
-            #     # global detect_count
-            #     detect_count = 0
         time.sleep(1)
 
 
@@ -55,12 +71,14 @@ def start_video():
     settings.start_video = True
     settings.start_processing = True
     show_frame()
+    logging.info('Start detection')  # Add info about start detection to log file
 
 
 def stop_video():
     settings.start_video = False
     settings.start_processing = False
     video_label.config(image=main_image)
+    logging.info('Stop detection')  # Add info about stop detection to log file
 
 
 def disable_button(button):
@@ -69,6 +87,38 @@ def disable_button(button):
 
 def normal_button(button):
     button.config(state=NORMAL)
+
+
+def open_log():
+    filetypes = (('LOG files', '*.LOG'), ('Text files', '*.txt'))
+    file_name = fd.askopenfilename(title="Open file", filetypes=filetypes)
+    try:
+        with open(file_name, 'r') as f:
+            file_text = f.read()
+    except FileNotFoundError:  # Use it when user is closing window for opening log file
+        pass
+
+    if file_name:
+        root.wm_attributes('-topmost', False)  # Set daughter window adobe root window
+        window = Toplevel(root)  # Creat daughter window
+        window.title("Log File")
+        win_text = Text(window)
+        win_text.pack(side=LEFT)
+
+        scroll = Scrollbar(window, command=win_text.yview)
+        scroll.pack(side=RIGHT, fill=Y)
+        win_text.config(yscrollcommand=scroll.set)
+
+        win_text.insert(1.0, file_text)
+        window.grab_set()
+        window.focus_set()
+        window.wait_window()
+
+
+def detector(detect):
+    global bird_detect_counter
+    var.set(f'Detect counter: {bird_detect_counter}')  # Renamed Label from "Bird detection:" to "Detect counter:"
+    # return detect
 
 
 # Detect all connected webcams
@@ -136,16 +186,11 @@ def process_frame(img):
 
             if CLASSES[idx] in IGNORE:  # Ignore all classes except class "Bird"
                 detector(False)
-                # global detect_count
-                # detect_count = 0
                 continue
             else:
                 detector(True)
                 global detect_count
                 detect_count += 1
-                # play_random_sound(detect_count)
-                # if not play_random_sound_thread.is_alive():
-                #     play_random_sound_thread.start()
 
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")
@@ -232,11 +277,9 @@ var = StringVar()
 detect_label = Label(buttons_frame, textvariable=var)
 detect_label.grid(column=4, row=0, padx=20)
 
-
-def detector(detect):
-    global bird_detect_counter
-    var.set(f'Detect counter: {bird_detect_counter}')  # Renamed Label from "Bird detection:" to "Detect counter:"
-    # return detect
+# Create button Open log file
+btn_open_log = Button(buttons_frame, text="Open Log File", command=open_log)
+btn_open_log.grid(column=5, row=0, padx=20)
 
 
 detector(bird_detect_counter)
