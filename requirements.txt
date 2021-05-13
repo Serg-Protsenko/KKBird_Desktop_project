@@ -1,3 +1,4 @@
+pip==18.1
 altgraph==0.17
 cachetools==4.2.2
 future==0.18.2
