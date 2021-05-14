@@ -110,7 +110,7 @@ def open_log():
         win_text.config(yscrollcommand=scroll.set)
 
         win_text.insert(1.0, file_text)
-        # window.grab_set()  # Set
+        # window.grab_set()  # Set log window works priority than root window
         window.focus_set()
         window.wait_window()
 
@@ -225,7 +225,7 @@ root.title('Kind Kind Bird')
 root.iconbitmap('scarecrow-icon.ico')
 root.geometry('800x640+250+50')
 root.resizable(False, False)
-root.config(bg='#21242D')
+root.config(bg='#474e68')
 
 # Main image
 load_image = Image.open("scarecrow-main-picture.jpeg")
@@ -234,12 +234,12 @@ main_image = ImageTk.PhotoImage(resized_img)
 
 # Create video block
 # Create video frame
-video_frame = Frame(root, background='#21242D')
+video_frame = Frame(root, background='#474e68')  # #21242D
 video_frame.pack()
 
 # Create video label
 video_label = Label(video_frame, image=main_image)  # , text="Press Start Video"
-video_label.pack(fill=BOTH, expand=True)
+video_label.pack(fill=BOTH, expand=True, side=TOP)
 
 # Create button block
 
@@ -248,38 +248,38 @@ video_label.pack(fill=BOTH, expand=True)
 # ttk_style.configure()
 
 # Create button frame
-buttons_frame = Frame(root, height=40, background='#474e68')
-buttons_frame.pack(fill=X, side=BOTTOM)
+buttons_frame = Frame(root, height=40, background='#474e68')  # #474e68
+buttons_frame.pack(fill=X, side=TOP)
 
 # Create list of webcams
-list_cams_label = Label(buttons_frame, text='Choose webcam:')
-list_cams_label.grid(column=0, row=0, padx=5)
-list_cams = ttk.Combobox(buttons_frame, values=valid_cams, width=11)
+list_cams_label = Label(buttons_frame, text='Choose webcam:', width=14)
+list_cams_label.grid(column=0, row=0, padx=17, pady=8)
+list_cams = ttk.Combobox(buttons_frame, values=valid_cams, width=14)
 list_cams['state'] = 'readonly'  # Fix bug -> It is possible to enter characters in the dropdown field
 list_cams.current(0)
 list_cams.bind("<<ComboboxSelected>>", chose_list)
-list_cams.grid(column=1, row=0, padx=5)
+list_cams.grid(column=1, row=0, padx=17, pady=8)
 
 # Create start/stop buttons
-btn_start_video = Button(buttons_frame, text="Start Video",
+btn_start_video = Button(buttons_frame, text="Start Video", width=12,
                          command=lambda: [start_video(), disable_button(btn_start_video),
                                           normal_button(btn_stop_video)])
-btn_start_video.grid(column=2, row=0, padx=20)
+btn_start_video.grid(column=2, row=0, padx=17, pady=8)
 
-btn_stop_video = Button(buttons_frame, text="Stop Video", state=DISABLED,
+btn_stop_video = Button(buttons_frame, text="Stop Video", state=DISABLED, width=12,
                         command=lambda: [stop_video(), disable_button(btn_stop_video),
                                          normal_button(btn_start_video)])
-btn_stop_video.grid(column=3, row=0, padx=20)
+btn_stop_video.grid(column=3, row=0, padx=17, pady=8)
 
 
 # Detect block
 var = StringVar()
-detect_label = Label(buttons_frame, textvariable=var)
-detect_label.grid(column=4, row=0, padx=20)
+detect_label = Label(buttons_frame, textvariable=var, width=14)
+detect_label.grid(column=4, row=0, padx=17, pady=8)
 
 # Create button Open log file
-btn_open_log = Button(buttons_frame, text="Open Log File", command=open_log)
-btn_open_log.grid(column=5, row=0, padx=20)
+btn_open_log = Button(buttons_frame, text="Open Log File", command=open_log, width=12)
+btn_open_log.grid(column=5, row=0, padx=17, pady=8)
 
 
 detector(bird_detect_counter)
