@@ -99,7 +99,7 @@ def open_log():
         pass
 
     if file_name:
-        root.wm_attributes('-topmost', False)  # Set daughter window adobe root window
+        root.wm_attributes('-topmost', False)  # Turn off that root window to be adobe all apps/windows
         window = Toplevel(root)  # Creat daughter window
         window.title("Log File")
         win_text = Text(window)
@@ -110,7 +110,7 @@ def open_log():
         win_text.config(yscrollcommand=scroll.set)
 
         win_text.insert(1.0, file_text)
-        window.grab_set()
+        # window.grab_set()  # Set
         window.focus_set()
         window.wait_window()
 
@@ -293,5 +293,5 @@ except Exception:
     messagebox.showerror('Error', 'USB camera access error!')
 
 
-root.wm_attributes('-topmost', True)  # set adobe all apps/windows
+root.wm_attributes('-topmost', True)  # Set adobe all apps/windows
 root.mainloop()
